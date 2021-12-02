@@ -41,7 +41,7 @@ func TestInsertKost(t *testing.T) {
 	})
 }
 
-func TestSearchKost(t *testing.T) {
+func TestKost(t *testing.T) {
 	t.Run("Test case 1 | Success GetAllKost", func(t *testing.T) {
 		setup()
 		kostRepository.On("GetAllKost", mock.Anything, mock.Anything).Return(listKostDomain, nil).Once()
@@ -112,7 +112,7 @@ func TestDeleteKost(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Test case 2 | Failed Delete Category", func(t *testing.T) {
+	t.Run("Test case 2 | Failed Delete DetailFas", func(t *testing.T) {
 		setup()
 		kostRepository.On("DeleteKost", mock.Anything, mock.Anything).Return(errors.New("kosts  Not Found")).Once()
 		err := kostService.DeleteKost(context.Background(), kostDomain.ID)

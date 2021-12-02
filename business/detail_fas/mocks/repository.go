@@ -2,7 +2,6 @@ package mocks_test
 
 import (
 	detailfas "cleanarch/business/detail_fas"
-	"cleanarch/business/kost"
 	"context"
 
 	"github.com/stretchr/testify/mock"
@@ -74,18 +73,18 @@ func (_m *Repository) GetDetailFasById(ctx context.Context, id uint) (detailfas.
 	return r0, r1
 }
 
-func (_m *Repository) UpdateDetailFas(ctx context.Context, domain kost.Domain, id uint) (kost.Domain, error) {
+func (_m *Repository) UpdateDetailFas(ctx context.Context, domain detailfas.Domain, id uint) (detailfas.Domain, error) {
 	ret := _m.Called(ctx, domain, id)
 
-	var r0 kost.Domain
-	if rf, ok := ret.Get(0).(func(context.Context, kost.Domain, uint) kost.Domain); ok {
+	var r0 detailfas.Domain
+	if rf, ok := ret.Get(0).(func(context.Context, detailfas.Domain, uint) detailfas.Domain); ok {
 		r0 = rf(ctx, domain, id)
 	} else {
-		r0 = ret.Get(0).(kost.Domain)
+		r0 = ret.Get(0).(detailfas.Domain)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, kost.Domain, uint) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, detailfas.Domain, uint) error); ok {
 		r1 = rf(ctx, domain, id)
 	} else {
 		r1 = ret.Error(1)
@@ -94,7 +93,7 @@ func (_m *Repository) UpdateDetailFas(ctx context.Context, domain kost.Domain, i
 	return r0, r1
 }
 
-func (_m *Repository) DeleteKost(ctx context.Context, id uint) error {
+func (_m *Repository) DeleteDetailFas(ctx context.Context, id uint) error {
 	ret := _m.Called(ctx, id)
 
 	var r0 error
