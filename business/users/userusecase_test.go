@@ -4,8 +4,12 @@ import (
 	"cleanarch/app/middleware"
 	"cleanarch/business/users"
 	"cleanarch/business/users/mocks"
+	"context"
+	"errors"
+	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -27,30 +31,30 @@ func setup() {
 	AllUserDomain = append(AllUserDomain, userDomain)
 }
 
-// func TestRegister(t *testing.T) {
-// 	setup()
-// 	userRepository.On("Register", mock.Anything, mock.Anything).Return(userDomain, nil)
-// 	t.Run("Test Case 1 | Success Register", func(t *testing.T) {
-// 		user, err := userService.Register(users.Domain{
-// 			Id:       1,
-// 			Nama:     "ilhamtw",
-// 			Email:    "ilhamtw@gmail.com",
-// 			Password: "123nice",
-// 		}, context.Background())
-// 		assert.NoError(t, err)
-// 		assert.Equal(t, userDomain, user)
-// 	})
-// }
+func TestRegister(t *testing.T) {
+	setup()
+	userRepository.On("Register", mock.Anything, mock.Anything).Return(userDomain, nil)
+	t.Run("Test Case 1 | Success Register", func(t *testing.T) {
+		user, err := userService.Register(&users.Domain{
+			Id:       1,
+			Nama:     "ilhamtw",
+			Email:    "ilhamtw@gmail.com",
+			Password: "123nice",
+		}, context.Background())
+		assert.NoError(t, err)
+		assert.Equal(t, userDomain, user)
+	})
+}
 
 // func TestLogin(t *testing.T) {
 // 	t.Run("Test Case 1 | Success Login", func(t *testing.T) {
 // 		setup()
 // 		userRepository.On("Login",
-// 			mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(users.Domain{}, nil).Once()
+// 			mock.Anything, mock.Anything).Return(users.Domain{}, nil).Once()
 // 		user, token, err := userService.Login(users.Domain{
 // 			Email:    "ilhamtw@gmail.com",
 // 			Password: "nicenice",
-// 		}, context.Background(), "123")
+// 		}, context.Background())
 
 // 		assert.NotNil(t, token)
 // 		assert.NoError(t, err)
@@ -76,53 +80,83 @@ func setup() {
 // 	})
 // }
 
-// =======================================================================================================================
-// func TestLogin(t *testing.T) {
+func TestUser(t *testing.T) {
+	t.Run("Test case 1 | Success GetAllUser", func(t *testing.T) {
+		setup()
+		userRepository.On("GetAllUser", mock.Anything, mock.Anything).Return(AllUserDomain, nil).Once()
+		data, err := userService.GetAllUser(context.Background())
 
-// 	setup()
-// 	userRepository.On("Login",
-// 		mock.Anything,
-// 		mock.AnythingOfType("users.Domain")).Return(userDomain, nil).Once()
+		assert.NoError(t, err)
+		assert.NotNil(t, data)
+		assert.Equal(t, len(data), len(AllUserDomain))
+	})
+}
 
-// 	t.Run("Test case 1 | Valid Login", func(t *testing.T) {
-// 		user, err := userService.Login(users.Domain{
-// 			Email:    "daaffa@net.usc",
-// 			Password: "kecoak11",
-// 		}, context.Background())
+func TestGetById(t *testing.T) {
+	t.Run("Test case 1 | Success GetById", func(t *testing.T) {
+		setup()
+		userRepository.On("GetUserById", mock.Anything, mock.AnythingOfType("uint")).Return(userDomain, nil).Once()
+		data, err := userService.GetUserById(context.Background(), userDomain.Id)
 
-// 		assert.Nil(t, err)
-// 		assert.Equal(t, users.Domain{}, user.Nama)
-// 	})
+		assert.NoError(t, err)
+		assert.NotNil(t, data)
+	})
 
-// 	t.Run("Test case 2 | Error Login", func(t *testing.T) {
-// 		userRepository.On("Login",
-// 			mock.Anything,
-// 			mock.AnythingOfType("users.Domain")).Return(users.Domain{}, errors.New("Unexpected Error")).Once()
-// 		user, err := userService.Login(users.Domain{
-// 			Email:    "daaffa@net.usc",
-// 			Password: "kecoak11",
-// 		}, context.Background())
+	t.Run("Test case 2 | Error GetById(user ID = 0)", func(t *testing.T) {
+		setup()
+		userDomain.Id = 0
+		userRepository.On("GetUserById", mock.Anything, mock.AnythingOfType("uint")).Return(userDomain, nil).Once()
+		data, err := userService.GetUserById(context.Background(), userDomain.Id)
 
-// 		assert.NotNil(t, err)
-// 		assert.Equal(t, user, users.Domain{})
-// 	})
+		assert.NoError(t, err)
+		assert.Equal(t, data, users.Domain{})
+	})
 
-// 	t.Run("Test Case 3 | Invalid Email Empty", func(t *testing.T) {
+	t.Run("Test case 3 | Error GetById", func(t *testing.T) {
+		setup()
+		userRepository.On("GetUserById", mock.Anything, mock.AnythingOfType("uint")).Return(users.Domain{}, nil).Once()
+		data, err := userService.GetUserById(context.Background(), 7)
 
-// 		_, err := userService.Login(users.Domain{
-// 			Email:    "",
-// 			Password: "kecoak11",
-// 		}, context.Background())
-// 		assert.NotNil(t, err)
-// 	})
+		assert.NoError(t, err)
+		assert.Equal(t, data, users.Domain{})
+	})
+}
 
-// 	t.Run("Test Case 4 | Invalid Password Empty", func(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
+	t.Run("Test case 1 | Success Update user", func(t *testing.T) {
+		setup()
+		userRepository.On("UpdateUser", mock.Anything, mock.Anything, mock.AnythingOfType("uint")).Return(userDomain, nil).Once()
+		data, err := userService.UpdateUser(context.Background(), userDomain, userDomain.Id)
 
-// 		_, err := userService.Login(users.Domain{
-// 			Email:    "daaffa@net.usc",
-// 			Password: "",
-// 		}, context.Background())
-// 		assert.NotNil(t, err)
-// 	})
+		assert.NotNil(t, data)
+		assert.NoError(t, err)
+	})
 
-// }
+	t.Run("Test case 2 | Failed Update user", func(t *testing.T) {
+		setup()
+		userRepository.On("UpdateUser", mock.Anything, mock.Anything, mock.AnythingOfType("uint")).Return(userDomain, errors.New("Books Not Found")).Once()
+		data, err := userService.UpdateUser(context.Background(), userDomain, userDomain.Id)
+
+		assert.Equal(t, data, users.Domain{})
+		assert.Error(t, err)
+	})
+}
+
+func TestDeleteUser(t *testing.T) {
+	t.Run("Test case 1 | Success Delete user", func(t *testing.T) {
+		setup()
+		userRepository.On("DeleteUser", mock.Anything, mock.Anything).Return(nil).Once()
+		err := userService.DeleteUser(context.Background(), userDomain.Id)
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("Test case 2 | Failed Delete user", func(t *testing.T) {
+		setup()
+		userRepository.On("DeleteUser", mock.Anything, mock.Anything).Return(errors.New("users  Not Found")).Once()
+		err := userService.DeleteUser(context.Background(), userDomain.Id)
+
+		assert.NotEqual(t, err, errors.New("users Not Found"))
+		assert.Error(t, err)
+	})
+}
