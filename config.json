@@ -7,11 +7,11 @@
         "timeout": 2
     },
     "database": {
-        "host": "localhost",
+        "host": "ec2-3-143-67-209.us-east-2.compute.amazonaws.com",
         "port": "3306",
-        "user": "root",
-        "pass": "010110",
-        "name": "cleanarch"
+        "user": "admin",
+        "pass": "Judin204",
+        "name": "kostpedia"
     },
     "jwt": {
         "secret": "supersecret12345!@#$%",
